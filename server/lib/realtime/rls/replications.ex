@@ -1,5 +1,5 @@
 defmodule Realtime.RLS.Replications do
-  import Realtime.RLS.Repo
+  import Realtime.RLS.Repo.Test
 
   def prepare_replication(slot_name, temporary_slot) do
     query(
