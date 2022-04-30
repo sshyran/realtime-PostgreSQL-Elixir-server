@@ -141,3 +141,16 @@ config :realtime, Endpoint,
   secret_key_base: session_secret_key_base
 
 config :realtime, Realtime.Metrics.PromEx, disabled: !expose_metrics
+
+config :logger,
+  level: :info,
+  backends: [LogflareLogger.HttpBackend]
+
+config :logflare_logger_backend,
+  url: "https://api.logflare.app",
+  level: :info,
+  api_key: System.get_env("LOGFLARE_API_KEY"),
+  source_id: System.get_env("LOGFLARE_SOURCE_ID"),
+  flush_interval: 1_000,
+  max_batch_size: 100,
+  metadata: :all

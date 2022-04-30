@@ -39,7 +39,8 @@ defmodule Realtime.MixProject do
     [
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
-      {:phoenix, "~> 1.5"},
+      {:logflare_logger_backend, "~> 0.11.0"},
+      {:phoenix, "~> 1.6.7"},
       {:phoenix_pubsub, "~> 2.0"},
       {:phoenix_html, "~> 2.14"},
       {:phoenix_live_reload, "~> 1.3", only: :dev},
@@ -53,7 +54,7 @@ defmodule Realtime.MixProject do
       {:retry, "~> 0.14.1"},
       {:ecto_sql, "~> 3.0"},
       {:postgrex, "~> 0.15.10"},
-      {:prom_ex, "~> 1.3.0"},
+      {:prom_ex, "~> 1.7.1"},
       {:mock, "~> 0.3.0", only: :test}
     ]
   end
