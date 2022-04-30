@@ -2,8 +2,6 @@
 # License: https://github.com/phoenixframework/phoenix/blob/518a4640a70aa4d1370a64c2280d598e5b928168/LICENSE.md
 
 defmodule Realtime.MessageDispatcher do
-  require Logger
-
   alias Phoenix.Socket.Broadcast
 
   @doc """
@@ -14,13 +12,9 @@ defmodule Realtime.MessageDispatcher do
           pid,
           Phoenix.Socket.Broadcast.t()
         ) :: :ok
-  def dispatch(
-        [_ | _] = topic_subscriptions,
-        _from,
-        {id, %Broadcast{payload: payload} = broadcast}
-      ) do
+  def dispatch([_ | _] = topic_subscriptions, _from, %Broadcast{payload: payload} = msg) do
     {subscription_ids, new_payload} = Map.pop(payload, :subscription_ids)
-    new_msg = {id, %{broadcast | payload: new_payload}}
+    new_msg = %{msg | payload: new_payload}
 
     Enum.reduce(topic_subscriptions, %{}, fn
       {_pid, {:subscriber_fastlane, fastlane_pid, serializer, subscription_id}}, cache ->
@@ -42,23 +36,16 @@ defmodule Realtime.MessageDispatcher do
 
   def dispatch(_, _, _), do: :ok
 
-  defp broadcast_message(cache, fastlane_pid, {id, msg}, serializer) do
-    cache =
-      case cache do
-        %{^serializer => encoded_msg} ->
-          send(fastlane_pid, encoded_msg)
-          cache
+  defp broadcast_message(cache, fastlane_pid, msg, serializer) do
+    case cache do
+      %{^serializer => encoded_msg} ->
+        send(fastlane_pid, encoded_msg)
+        cache
 
-        %{} ->
-          encoded_msg = serializer.fastlane!(msg)
-          send(fastlane_pid, encoded_msg)
-          Map.put(cache, serializer, encoded_msg)
-      end
-
-    Logger.info("Message sent to fastlane pid",
-      data: %{id: id, fastlane_pid: fastlane_pid}
-    )
-
-    cache
+      %{} ->
+        encoded_msg = serializer.fastlane!(msg)
+        send(fastlane_pid, encoded_msg)
+        Map.put(cache, serializer, encoded_msg)
+    end
   end
 end

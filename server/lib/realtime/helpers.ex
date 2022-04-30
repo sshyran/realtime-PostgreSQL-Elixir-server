@@ -1,6 +1,4 @@
 defmodule Realtime.Helpers do
-  require Logger
-
   alias Phoenix.Socket.Broadcast
   alias Realtime.{MessageDispatcher, PubSub}
 
@@ -39,18 +37,12 @@ defmodule Realtime.Helpers do
   end
 
   def broadcast_change(topic, %{type: event} = change) do
-    id = Ecto.UUID.generate()
-
     broadcast = %Broadcast{
       topic: topic,
       event: event,
       payload: change
     }
 
-    msg = {id, broadcast}
-
-    Phoenix.PubSub.broadcast_from(PubSub, self(), topic, msg, MessageDispatcher)
-
-    Logger.info("Message dispatched", data: %{id: id})
+    Phoenix.PubSub.broadcast_from(PubSub, self(), topic, broadcast, MessageDispatcher)
   end
 end
