@@ -119,7 +119,9 @@ config :realtime,
   replication_poll_interval: replication_poll_interval,
   subscription_sync_interval: subscription_sync_interval,
   max_changes: max_changes,
-  max_record_bytes: max_record_bytes
+  max_record_bytes: max_record_bytes,
+  logflare_api_key: System.get_env("LOGFLARE_API_KEY"),
+  logflare_source_id: System.get_env("LOGFLARE_SOURCE_ID")
 
 config :realtime,
   ecto_repos: [RLS.Repo]

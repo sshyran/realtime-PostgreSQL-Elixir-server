@@ -37,12 +37,25 @@ defmodule Realtime.Helpers do
   end
 
   def broadcast_change(topic, %{type: event} = change) do
+    id = Ecto.UUID.generate()
+
     broadcast = %Broadcast{
       topic: topic,
       event: event,
       payload: change
     }
 
-    Phoenix.PubSub.broadcast_from(PubSub, self(), topic, broadcast, MessageDispatcher)
+    msg = {id, broadcast}
+
+    Realtime.Log.Manager.add_log(%{
+      "message" => "Message broadcasting",
+      "metadata" => %{
+        "message_id" => id,
+        "payload_bytes" => broadcast |> :erlang.term_to_binary() |> :erlang.byte_size(),
+        "timestamp" => inspect(:os.system_time(:microsecond))
+      }
+    })
+
+    Phoenix.PubSub.broadcast_from(PubSub, self(), topic, msg, MessageDispatcher)
   end
 end

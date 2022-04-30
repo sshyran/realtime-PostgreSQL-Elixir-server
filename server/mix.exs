@@ -54,6 +54,9 @@ defmodule Realtime.MixProject do
       {:ecto_sql, "~> 3.0"},
       {:postgrex, "~> 0.15.10"},
       {:prom_ex, "~> 1.3.0"},
+      {:tesla, "~> 1.4"},
+      {:finch, "~> 0.3"},
+      {:bertex, "~> 1.3"},
       {:mock, "~> 0.3.0", only: :test}
     ]
   end

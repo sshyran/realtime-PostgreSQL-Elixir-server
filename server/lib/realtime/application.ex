@@ -139,6 +139,11 @@ defmodule Realtime.Application do
         name: PubSub, adapter: Phoenix.PubSub.PG2
       },
       Endpoint,
+      {Finch, name: Realtime.Finch},
+      %{
+        id: Realtime.Log.Manager,
+        start: {Realtime.Log.Manager, :start_link, []}
+      },
       {
         SubscriptionManager,
         replication_mode: replication_mode,

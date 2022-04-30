@@ -12,9 +12,13 @@ defmodule Realtime.MessageDispatcher do
           pid,
           Phoenix.Socket.Broadcast.t()
         ) :: :ok
-  def dispatch([_ | _] = topic_subscriptions, _from, %Broadcast{payload: payload} = msg) do
+  def dispatch(
+        [_ | _] = topic_subscriptions,
+        _from,
+        {id, %Broadcast{payload: payload} = broadcast}
+      ) do
     {subscription_ids, new_payload} = Map.pop(payload, :subscription_ids)
-    new_msg = %{msg | payload: new_payload}
+    new_msg = {id, %{broadcast | payload: new_payload}}
 
     Enum.reduce(topic_subscriptions, %{}, fn
       {_pid, {:subscriber_fastlane, fastlane_pid, serializer, subscription_id}}, cache ->
@@ -36,16 +40,28 @@ defmodule Realtime.MessageDispatcher do
 
   def dispatch(_, _, _), do: :ok
 
-  defp broadcast_message(cache, fastlane_pid, msg, serializer) do
-    case cache do
-      %{^serializer => encoded_msg} ->
-        send(fastlane_pid, encoded_msg)
-        cache
+  defp broadcast_message(cache, fastlane_pid, {id, msg}, serializer) do
+    cache =
+      case cache do
+        %{^serializer => encoded_msg} ->
+          send(fastlane_pid, encoded_msg)
+          cache
 
-      %{} ->
-        encoded_msg = serializer.fastlane!(msg)
-        send(fastlane_pid, encoded_msg)
-        Map.put(cache, serializer, encoded_msg)
-    end
+        %{} ->
+          encoded_msg = serializer.fastlane!(msg)
+          send(fastlane_pid, encoded_msg)
+          Map.put(cache, serializer, encoded_msg)
+      end
+
+    Realtime.Log.Manager.add_log(%{
+      "message" => "Message sent to fastlane",
+      "metadata" => %{
+        "fastlane_pid" => inspect(fastlane_pid),
+        "message_id" => id,
+        "timestamp" => inspect(:os.system_time(:microsecond))
+      }
+    })
+
+    cache
   end
 end
