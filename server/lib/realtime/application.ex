@@ -80,11 +80,10 @@ defmodule Realtime.Application do
 
         "RLS" ->
           [publication] = publications
-          repo_opts = Application.fetch_env!(:realtime, RLS.Repo.Test)
+          repo_opts = Application.fetch_env!(:realtime, RLS.Repo)
 
           [
             RLS.Repo,
-            RLS.Repo.Test,
             {
               RLS.ReplicationPoller,
               backoff_type: Keyword.fetch!(repo_opts, :backoff_type),
