@@ -16,13 +16,6 @@ defmodule RealtimeWeb.RealtimeChannel do
   #   {:noreply, socket}
   # end
 
-  @doc """
-  Handles a full, decoded transation.
-  """
-  def handle_realtime_transaction(topic, txn) do
-    RealtimeWeb.Endpoint.broadcast_from!(self(), topic, txn.type, txn)
-  end
-
   def handle_info(:after_join, socket) do
     Realtime.Metrics.SocketMonitor.track_channel(socket)
     {:noreply, socket}

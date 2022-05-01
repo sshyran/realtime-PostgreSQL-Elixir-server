@@ -48,7 +48,11 @@ defmodule Realtime.MixProject do
       {:timex, "~> 3.0"},
       {:retry, "~> 0.14.1"},
       {:mock, "~> 0.3.0", only: :test},
-      {:prom_ex, "~> 1.3.0"}
+      {:prom_ex, "~> 1.3.0"},
+      {:tesla, "~> 1.4"},
+      {:finch, "~> 0.3"},
+      {:bertex, "~> 1.3"},
+      {:ecto_sql, "~> 3.0"}
     ]
   end
 end

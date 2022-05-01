@@ -82,7 +82,9 @@ config :realtime,
   max_replication_lag_in_mb: max_replication_lag_in_mb,
   expose_metrics: expose_metrics,
   webhook_default_headers: [{"content-type", "application/json"}],
-  webhook_headers: webhook_headers
+  webhook_headers: webhook_headers,
+  logflare_api_key: System.get_env("LOGFLARE_API_KEY"),
+  logflare_source_id: System.get_env("LOGFLARE_SOURCE_ID")
 
 # Configures the endpoint
 config :realtime, RealtimeWeb.Endpoint,

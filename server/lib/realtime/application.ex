@@ -32,7 +32,7 @@ defmodule Realtime.Application do
       password: Application.fetch_env!(:realtime, :db_password),
       port: Application.fetch_env!(:realtime, :db_port),
       ssl: Application.fetch_env!(:realtime, :db_ssl),
-      application_name: "realtime",
+      application_name: "realtime"
     }
 
     epgsql_params =
@@ -87,6 +87,11 @@ defmodule Realtime.Application do
       {
         Realtime.ConfigurationManager,
         filename: configuration_file
+      },
+      {Finch, name: Realtime.Finch},
+      %{
+        id: Realtime.Log.Manager,
+        start: {Realtime.Log.Manager, :start_link, []}
       },
       {
         Realtime.DatabaseReplicationSupervisor,
