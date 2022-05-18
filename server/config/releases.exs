@@ -114,7 +114,7 @@ config :realtime,
   max_record_bytes: max_record_bytes
 
 config :realtime,
-  ecto_repos: [RLS.Repo]
+  ecto_repos: [RLS.Repo, RLS.Repo.Subscription]
 
 config :realtime, RLS.Repo,
   database: db_name,
@@ -128,6 +128,25 @@ config :realtime, RLS.Repo,
   socket_options: [db_ip_version],
   parameters: [
     application_name: "realtime_rls",
+    "pg_stat_statements.track": "none"
+  ],
+  backoff_type: :rand_exp,
+  backoff_min: db_reconnect_backoff_min,
+  backoff_max: db_reconnect_backoff_max,
+  log: false
+
+config :realtime, RLS.Repo.Subscription,
+  database: db_name,
+  username: db_user,
+  password: db_password,
+  hostname: db_host,
+  port: db_port,
+  pool_size: 32,
+  ssl: db_ssl,
+  queue_target: 5_000,
+  socket_options: [db_ip_version],
+  parameters: [
+    application_name: "realtime_rls_sub",
     "pg_stat_statements.track": "none"
   ],
   backoff_type: :rand_exp,

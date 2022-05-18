@@ -84,6 +84,7 @@ defmodule Realtime.Application do
 
           [
             RLS.Repo,
+            RLS.Repo.Subscription,
             {
               RLS.ReplicationPoller,
               backoff_type: Keyword.fetch!(repo_opts, :backoff_type),

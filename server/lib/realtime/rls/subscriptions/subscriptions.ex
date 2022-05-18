@@ -17,7 +17,7 @@ defmodule Realtime.RLS.Subscriptions do
     |> enrich_subscription_params()
     |> generate_topic_subscriptions()
     |> insert_topic_subscriptions()
-    |> Repo.transaction()
+    |> Repo.Subscription.transaction()
   end
 
   @spec delete_topic_subscriber(map()) :: {integer(), nil | [term()]}
@@ -29,7 +29,7 @@ defmodule Realtime.RLS.Subscriptions do
     from(s in Subscription,
       where: s.subscription_id == ^id and s.entity in ^oids and s.filters == ^filters
     )
-    |> Repo.delete_all()
+    |> Repo.Subscription.delete_all()
   end
 
   def delete_topic_subscriber(_), do: {0, nil}
@@ -43,12 +43,12 @@ defmodule Realtime.RLS.Subscriptions do
     |> enrich_subscription_params()
     |> generate_topic_subscriptions()
     |> insert_topic_subscriptions()
-    |> Repo.transaction()
+    |> Repo.Subscription.transaction()
   end
 
   defp fetch_database_roles(%Multi{} = multi) do
     Multi.run(multi, :database_roles, fn _, _ ->
-      Repo.query(
+      Repo.Subscription.query(
         "select rolname from pg_authid",
         []
       )
@@ -64,7 +64,7 @@ defmodule Realtime.RLS.Subscriptions do
 
   defp fetch_publication_tables(%Multi{} = multi) do
     Multi.run(multi, :publication_entities, fn _, _ ->
-      Repo.query(
+      Repo.Subscription.query(
         "select
           schemaname,
           tablename,
@@ -218,7 +218,7 @@ defmodule Realtime.RLS.Subscriptions do
         |> Enum.chunk_every(20_000)
         |> Enum.reduce(0, fn batch_subs, acc ->
           {inserts, nil} =
-            Repo.insert_all(Subscription, batch_subs,
+            Repo.Subscription.insert_all(Subscription, batch_subs,
               on_conflict: {:replace, [:claims]},
               conflict_target: [:subscription_id, :entity, :filters]
             )
