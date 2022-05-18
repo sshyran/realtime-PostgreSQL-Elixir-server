@@ -43,7 +43,7 @@ defmodule Realtime.SubscriptionManager do
           claims: map()
         }) :: :ok | :error
   def track_topic_subscriber(topic_sub) do
-    GenServer.call(__MODULE__, {:track_topic_subscriber, topic_sub}, 30_000)
+    GenServer.call(__MODULE__, {:track_topic_subscriber, topic_sub}, :infinity)
   end
 
   def handle_call(

@@ -17,7 +17,7 @@ defmodule Realtime.RLS.Subscriptions do
     |> enrich_subscription_params()
     |> generate_topic_subscriptions()
     |> insert_topic_subscriptions()
-    |> Repo.Subscription.transaction()
+    |> Repo.Subscription.transaction(timeout: :infinity)
   end
 
   @spec delete_topic_subscriber(map()) :: {integer(), nil | [term()]}
@@ -29,7 +29,7 @@ defmodule Realtime.RLS.Subscriptions do
     from(s in Subscription,
       where: s.subscription_id == ^id and s.entity in ^oids and s.filters == ^filters
     )
-    |> Repo.Subscription.delete_all()
+    |> Repo.Subscription.delete_all(timeout: :infinity)
   end
 
   def delete_topic_subscriber(_), do: {0, nil}
@@ -43,7 +43,7 @@ defmodule Realtime.RLS.Subscriptions do
     |> enrich_subscription_params()
     |> generate_topic_subscriptions()
     |> insert_topic_subscriptions()
-    |> Repo.Subscription.transaction()
+    |> Repo.Subscription.transaction(timeout: :infinity)
   end
 
   defp fetch_database_roles(%Multi{} = multi) do
@@ -220,7 +220,8 @@ defmodule Realtime.RLS.Subscriptions do
           {inserts, nil} =
             Repo.Subscription.insert_all(Subscription, batch_subs,
               on_conflict: {:replace, [:claims]},
-              conflict_target: [:subscription_id, :entity, :filters]
+              conflict_target: [:subscription_id, :entity, :filters],
+              timeout: :infinity
             )
 
           inserts + acc
